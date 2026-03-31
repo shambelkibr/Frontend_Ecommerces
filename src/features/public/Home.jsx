@@ -15,21 +15,16 @@ export default function Home() {
   const [selectedSize, setSelectedSize] = useState("All");
   const [selectedColor, setSelectedColor] = useState("All");
 
-  const mockClothes = [
-    { id: 'm1', name: 'Debre Birhan Thick Bernos', price: 2500, image: 'https://images.unsplash.com/photo-1544022613-e87ca75a3c46?w=500&q=80', description: 'Hand-woven traditional Ethiopian winter cloak.', category: 'Men', size: 'XL', color: 'Black' },
-    { id: 'm2', name: 'Shemma Dress with Tilet', price: 4200, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80', description: 'Elegant cultural wear directly from local weavers.', category: 'Women', size: 'M', color: 'White' },
-    { id: 'm3', name: 'Modern Wool Coat', price: 6500, image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500&q=80', description: 'Stay warm in style with locally manufactured coats.', category: 'Unisex', size: 'L', color: 'Grey' },
-    { id: 'm4', name: 'Habesha T-Shirt', price: 800, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80', description: 'Casual cotton t-shirt with local art prints.', category: 'Men', size: 'M', color: 'White' },
-    { id: 'm5', name: 'Highland Jacket', price: 4500, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80', description: 'Weather resistant jacket, perfect for Debre Birhan cold.', category: 'Women', size: 'S', color: 'Red' }
-  ];
-
   useEffect(() => {
     api
       .get("/products")
       .then((res) => {
-        setProducts(res.data?.length ? res.data : mockClothes);
+        // Flatten variants for easy filtering on frontend if needed, or check if variant array includes filter
+        if(res.data) setProducts(res.data);
       })
-      .catch(() => setProducts(mockClothes));
+      .catch((err) => {
+         console.error("Failed to load products", err);
+      });
   }, []);
 
   async function handleAddToCart(product) {
@@ -51,16 +46,29 @@ export default function Home() {
     }
   }
 
-  // Derived unique filter options
+  // Derive all unique filter options directly from actual DB variations!
   const categories = ["All", ...new Set(products.map(p => p.category).filter(Boolean))];
-  const sizes = ["All", "S", "M", "L", "XL"];
-  const colors = ["All", ...new Set(products.map(p => p.color).filter(Boolean))];
+  
+  const allSizes = products.flatMap(p => p.variants ? p.variants.map(v => v.size) : []);
+  const sizes = ["All", ...new Set(allSizes.filter(Boolean))];
+  
+  const allColors = products.flatMap(p => p.variants ? p.variants.map(v => v.color) : []);
+  const colors = ["All", ...new Set(allColors.filter(Boolean))];
 
-  // Apply filters
+  // Apply filters robustly against variant nested arrays
   const filteredProducts = products.filter((p) => {
     const matchCategory = selectedCategory === "All" || p.category === selectedCategory;
-    const matchSize = selectedSize === "All" || p.size === selectedSize;
-    const matchColor = selectedColor === "All" || p.color === selectedColor;
+    
+    const hasSize = !p.variants || p.variants.length === 0 
+                    ? false 
+                    : p.variants.some(v => v.size === selectedSize);
+    const matchSize = selectedSize === "All" || hasSize;
+
+    const hasColor = !p.variants || p.variants.length === 0 
+                     ? false 
+                     : p.variants.some(v => v.color === selectedColor);
+    const matchColor = selectedColor === "All" || hasColor;
+
     return matchCategory && matchSize && matchColor;
   });
 
@@ -101,6 +109,7 @@ export default function Home() {
           </h3>
           
           <div className="space-y-6">
+            {categories.length > 1 && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
               <select className="w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white p-3 rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 outline-none"
@@ -108,9 +117,11 @@ export default function Home() {
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
+            )}
 
+            {sizes.length > 1 && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Size</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Available Sizes</label>
               <div className="flex flex-wrap gap-2">
                 {sizes.map(s => (
                   <button 
@@ -123,9 +134,11 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            )}
 
+            {colors.length > 1 && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Color</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Colors</label>
               <div className="flex flex-wrap gap-2">
                 {colors.map(c => (
                  <button 
@@ -138,6 +151,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            )}
             
             <button 
               onClick={() => { setSelectedCategory("All"); setSelectedSize("All"); setSelectedColor("All"); }}

@@ -7,6 +7,10 @@ export default function ProductCard({ product, onAddToCart }) {
       ? `http://localhost:5000${product.image}` 
       : "https://via.placeholder.com/300x400?text=No+Image";
 
+  // Derive unique sizes and colors from variants array
+  const sizes = product.variants ? [...new Set(product.variants.map(v => v.size))] : [];
+  const colors = product.variants ? [...new Set(product.variants.map(v => v.color))] : [];
+
   return (
     <div className="card group flex flex-col h-full bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1">
       <Link to={`/product/${product.id}`} className="relative block overflow-hidden aspect-[4/5] bg-gray-100 dark:bg-gray-900">
@@ -17,7 +21,6 @@ export default function ProductCard({ product, onAddToCart }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
-        {/* Simple pill overlay */}
         {product.status !== 'inactive' && (
           <span className="absolute top-4 left-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md text-gray-900 dark:text-gray-100 shadow-sm">
             In Stock
@@ -32,19 +35,29 @@ export default function ProductCard({ product, onAddToCart }) {
               {product.name}
             </h3>
           </Link>
-          <span className="font-extrabold text-lg text-gray-900 dark:text-white ml-3">
+          <span className="font-extrabold text-lg text-gray-900 dark:text-white ml-3 whitespace-nowrap">
             {product.price} ETB
           </span>
         </div>
         
-        {/* Details badges for category/size in card */}
-        {(product.category || product.size || product.color) && (
-          <div className="flex flex-wrap gap-1 mt-1 mb-2">
-            {product.category && <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">{product.category}</span>}
-            {product.size && <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">Size {product.size}</span>}
-            {product.color && <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">{product.color}</span>}
-          </div>
-        )}
+        {/* Dynamic Category & Variant Badges */}
+        <div className="flex flex-wrap gap-1 mt-1 mb-2">
+          {product.category && (
+            <span className="text-[10px] bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded font-bold">
+              {product.category}
+            </span>
+          )}
+          {sizes.length > 0 && (
+            <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">
+              Sizes: {sizes.join(', ')}
+            </span>
+          )}
+          {colors.length > 0 && (
+            <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">
+              Colors: {colors.join(', ')}
+            </span>
+          )}
+        </div>
 
         <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-4 flex-grow">
           {product.description}
