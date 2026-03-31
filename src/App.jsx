@@ -23,7 +23,7 @@ import SellerDashboard from "./features/dashboard/seller/SellerDashboard";
 import AddProduct from "./features/dashboard/seller/AddProduct";
 import ManageProductsSeller from "./features/dashboard/seller/ManageProducts";
 import SellerOrders from "./features/dashboard/seller/SellerOrders";
-import UploadLicense from "./features/dashboard/seller/UploadLicense";
+import ShopRegistration from "./features/dashboard/seller/ShopRegistration";
 
 // Admin Dashboard
 import AdminDashboard from "./features/dashboard/admin/AdminDashboard";
@@ -58,7 +58,7 @@ export default function App() {
           <Route path="/seller/add-product" element={<ProtectedRoute allowedRoles={["seller"]}><AddProduct /></ProtectedRoute>} />
           <Route path="/seller/products" element={<ProtectedRoute allowedRoles={["seller"]}><ManageProductsSeller /></ProtectedRoute>} />
           <Route path="/seller/orders" element={<ProtectedRoute allowedRoles={["seller"]}><SellerOrders /></ProtectedRoute>} />
-          <Route path="/seller/upload-license" element={<ProtectedRoute allowedRoles={["seller"]}><UploadLicense /></ProtectedRoute>} />
+          <Route path="/seller/setup-shop" element={<ProtectedRoute allowedRoles={["seller"]}><ShopRegistration /></ProtectedRoute>} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
