@@ -26,21 +26,23 @@ export default function Login() {
     <div className="page-shell max-w-lg">
       <form onSubmit={handleSubmit} className="card-surface p-6">
         <h1 className="text-2xl font-bold">Login</h1>
-        {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+        {error && (
+          <p className="mt-3 text-sm text-red-700 dark:text-red-400">{error}</p>
+        )}
         <input
-          className="mt-4 w-full rounded-lg border border-amber-300 p-3"
+          className="mt-4 w-full rounded-lg border border-amber-300 dark:border-amber-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          className="mt-3 w-full rounded-lg border border-amber-300 p-3"
+          className="mt-3 w-full rounded-lg border border-amber-300 dark:border-amber-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-3"
           placeholder="Password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="mt-4 w-full rounded-lg bg-amber-700 p-3 font-semibold text-white">
+        <button className="mt-4 w-full rounded-lg bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-500 p-3 font-semibold text-white transition-colors">
           Login
         </button>
       </form>

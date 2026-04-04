@@ -3,7 +3,9 @@ export default function CartItem({ item, onRemove }) {
     <div className="card-surface flex items-center justify-between gap-4 p-4">
       <div>
         <h4 className="font-bold">{item.name}</h4>
-        <p className="text-sm text-amber-900/70">Qty: {item.quantity}</p>
+        <p className="text-sm text-amber-900/70 dark:text-amber-200/80">
+          Qty: {item.quantity}
+        </p>
       </div>
       <div className="text-right">
         <p className="font-semibold">
